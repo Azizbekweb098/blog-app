@@ -1,0 +1,40 @@
+name: Laravel CI/CD
+
+on:
+  push:
+    branches:
+      - main # Asosiy branch nomi
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  laravel-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Kodni yuklash
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # PHP 8.3.11 sozlash
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3' # Laravel 10 uchun mos PHP versiyasi
+          extensions: mbstring, intl, bcmath
+          coverage: none
+
+      # Composer kutubxonalarini o'rnatish
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      # Laravelni sozlash
+      - name: Setup Laravel
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      # Agar test ishlatilmasa, bu qadam shart emas
+      # - name: Run tests
+      #   run: vendor/bin/phpunit
